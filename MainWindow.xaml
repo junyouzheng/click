@@ -112,7 +112,9 @@
           </Border>
         </UniformGrid>
 
-        <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+        <Button Content="试一下" Style="{StaticResource AccentButton}" Click="PreviewClick" Margin="0,0,0,14"/>
+
+        <Border Style="{StaticResource Card}" Margin="0,0,0,8">
           <Grid>
             <StackPanel Margin="0,0,58,0">
               <TextBlock Text="开机自启动" Style="{StaticResource RowTitle}"/>
@@ -123,10 +125,7 @@
           </Grid>
         </Border>
 
-        <Button Content="试一下" Style="{StaticResource AccentButton}" Click="PreviewClick"/>
-        <TextBlock TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" FontSize="12"
-                   LineHeight="18" Margin="4,12,4,0"
-                   Text="声音大小跟系统音量走。窗口上没有关闭按钮。再点一次托盘图标，或点到窗口外面，都会收回托盘。管理员窗口里的点击和打字，需要这个程序也以管理员身份运行才听得到、看得到。"/>
+        <Button Content="退出" Style="{StaticResource QuietButton}" Click="ExitClick"/>
       </StackPanel>
     </DockPanel>
   </Border>

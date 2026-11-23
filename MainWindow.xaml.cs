@@ -10,18 +10,20 @@ public partial class MainWindow : Window
     private readonly Action _persist;
     private readonly Action _preview;
     private readonly Action _demoKey;
+    private readonly Action _exitApp;
     private readonly OverlayWindow _overlay;
     private bool _syncing;
     private bool _exit;
     private bool _snapping;
     private long _holdOpenUntil;
 
-    internal MainWindow(AppSettings settings, Action persist, Action preview, Action demoKey, OverlayWindow overlay)
+    internal MainWindow(AppSettings settings, Action persist, Action preview, Action demoKey, Action exitApp, OverlayWindow overlay)
     {
         _settings = settings;
         _persist = persist;
         _preview = preview;
         _demoKey = demoKey;
+        _exitApp = exitApp;
         _overlay = overlay;
         _syncing = true;
         InitializeComponent();
@@ -179,6 +181,8 @@ public partial class MainWindow : Window
     }
 
     private void PreviewClick(object sender, RoutedEventArgs e) => _preview();
+
+    private void ExitClick(object sender, RoutedEventArgs e) => _exitApp();
 
     [DllImport("user32.dll")]
     private static extern bool GetWindowRect(IntPtr hWnd, out NativeRect rect);

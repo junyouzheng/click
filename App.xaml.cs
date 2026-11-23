@@ -58,7 +58,7 @@ public partial class App : System.Windows.Application
         _overlay = new OverlayWindow();
         if (!background)
             _overlay.Show();
-        _window = new MainWindow(_settings, Persist, Preview, DemoKey, _overlay);
+        _window = new MainWindow(_settings, Persist, Preview, DemoKey, ExitApp, _overlay);
         _keys = new KeyboardHook { Listen = _settings.KeySound };
         if (_keys.Installed)
             _keys.Key += (down, vk) => Dispatcher.BeginInvoke(() => _sound?.PlayKey(down, vk));
@@ -79,7 +79,7 @@ public partial class App : System.Windows.Application
         DispatcherUnhandledException += (_, _) => CursorTheme.Restore();
         AppDomain.CurrentDomain.ProcessExit += (_, _) => CursorTheme.Restore();
 
-        _tray = new TrayService(ToggleWindow, ExitApp, () => _settings, ToggleStartup);
+        _tray = new TrayService(ToggleWindow);
         SystemEvents.DisplaySettingsChanged += OnDisplay;
         _showEvent = new EventWaitHandle(false, EventResetMode.AutoReset, @"Local\Click.Show");
         _showWatch = new CancellationTokenSource();
@@ -144,7 +144,6 @@ public partial class App : System.Windows.Application
             _hook.TrackMove = _settings.Effects;
         if (!_settings.Effects)
             _overlay?.ClearTrail();
-        _tray?.Sync();
     }
 
     private void ApplyCursor()
@@ -198,54 +197,7 @@ public partial class App : System.Windows.Application
             _window.Present();
     }
 
-    private void ToggleEffects()
-    {
-        if (_settings is null)
-            return;
-        _settings.Effects = !_settings.Effects;
-        Persist();
-        _window?.Sync();
-    }
-
-    private void ToggleSound()
-    {
-        if (_settings is null)
-            return;
-        _settings.Sound = !_settings.Sound;
-        Persist();
-        _window?.Sync();
-    }
-
-    private void ToggleKeySound()
-    {
-        if (_settings is null)
-            return;
-        _settings.KeySound = !_settings.KeySound;
-        Persist();
-        _window?.Sync();
-        if (_settings.KeySound)
-            DemoKey();
-    }
-
     private void DemoKey() => _sound?.PlayKey(down: true, force: true);
-
-    private void ToggleStartup()
-    {
-        if (_settings is null)
-            return;
-        var enabled = !_settings.StartWithWindows;
-        try
-        {
-            StartupRegistry.SetEnabled(enabled);
-            _settings.StartWithWindows = enabled;
-            Persist();
-            _window?.Sync();
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(ex.Message, "click");
-        }
-    }
 
     private void ExitApp()
     {

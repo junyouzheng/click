@@ -9,54 +9,29 @@ namespace ClickFx;
 internal sealed class TrayService : IDisposable
 {
     private readonly Forms.NotifyIcon _icon;
-    private readonly Forms.ToolStripMenuItem _startup;
     private readonly Icon _iconImage;
-    private readonly Func<AppSettings> _settings;
 
-    public TrayService(
-        Action open,
-        Action exit,
-        Func<AppSettings> settings,
-        Action toggleStartup)
+    public TrayService(Action open)
     {
-        _settings = settings;
         _iconImage = MakeIcon();
-        _startup = new Forms.ToolStripMenuItem("开机自启动", null, (_, _) => toggleStartup());
-
-        var menu = new Forms.ContextMenuStrip();
-        menu.Items.Add(_startup);
-        menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add("退出", null, (_, _) => exit());
-        menu.Opening += (_, _) => SyncChecks();
-
         _icon = new Forms.NotifyIcon
         {
             Icon = _iconImage,
             Visible = true,
-            Text = "click",
-            ContextMenuStrip = menu
+            Text = "click"
         };
         _icon.MouseClick += (_, e) =>
         {
             if (e.Button == Forms.MouseButtons.Left)
                 open();
         };
-        SyncChecks();
     }
-
-    public void Sync() => SyncChecks();
 
     public void Dispose()
     {
         _icon.Visible = false;
         _icon.Dispose();
         _iconImage.Dispose();
-    }
-
-    private void SyncChecks()
-    {
-        _startup.Checked = _settings().StartWithWindows;
-        _icon.Text = "click";
     }
 
     private static Icon MakeIcon()
