@@ -118,7 +118,7 @@
           <Grid>
             <StackPanel Margin="0,0,58,0">
               <TextBlock Text="开机自启动" Style="{StaticResource RowTitle}"/>
-              <TextBlock Text="开机时静默启动，只留在托盘" Style="{StaticResource RowNote}"/>
+              <TextBlock Text="登录后以管理员身份留在托盘" Style="{StaticResource RowNote}"/>
             </StackPanel>
             <CheckBox x:Name="StartupBox" Style="{StaticResource ToggleSwitch}"
                       HorizontalAlignment="Right" Background="#F0C56A" Click="StartupClick"/>
