@@ -131,6 +131,7 @@ public partial class MainWindow : Window
         if (_exit || !IsVisible || IsActive || Environment.TickCount64 < _holdOpenUntil)
             return;
         Hide();
+        ResetExit();
     }
 
     private void EffectsClick(object sender, RoutedEventArgs e)
@@ -178,7 +179,21 @@ public partial class MainWindow : Window
         }
     }
 
-    private void ExitClick(object sender, RoutedEventArgs e) => _exitApp();
+    private void ExitClick(object sender, RoutedEventArgs e)
+    {
+        ExitBox.Visibility = Visibility.Collapsed;
+        ExitConfirm.Visibility = Visibility.Visible;
+    }
+
+    private void CancelExitClick(object sender, RoutedEventArgs e) => ResetExit();
+
+    private void ConfirmExitClick(object sender, RoutedEventArgs e) => _exitApp();
+
+    private void ResetExit()
+    {
+        ExitBox.Visibility = Visibility.Visible;
+        ExitConfirm.Visibility = Visibility.Collapsed;
+    }
 
     [DllImport("user32.dll")]
     private static extern bool GetWindowRect(IntPtr hWnd, out NativeRect rect);

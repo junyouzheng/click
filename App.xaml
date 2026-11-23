@@ -97,5 +97,37 @@
         </Setter.Value>
       </Setter>
     </Style>
+
+    <Style x:Key="NeutralButton" TargetType="Button">
+      <Setter Property="Foreground" Value="#F7F2EA"/>
+      <Setter Property="Background" Value="#171C28"/>
+      <Setter Property="BorderBrush" Value="#31384A"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="FontFamily" Value="Source Han Serif SC"/>
+      <Setter Property="FontSize" Value="15"/>
+      <Setter Property="Padding" Value="16,10"/>
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="bd" CornerRadius="12" Padding="{TemplateBinding Padding}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="bd" Property="Background" Value="#222838"/>
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="bd" Property="Background" Value="#2C3346"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
   </Application.Resources>
 </Application>
