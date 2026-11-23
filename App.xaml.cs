@@ -58,7 +58,7 @@ public partial class App : System.Windows.Application
         _overlay = new OverlayWindow();
         if (!background)
             _overlay.Show();
-        _window = new MainWindow(_settings, Persist, Preview, DemoKey, ExitApp, _overlay);
+        _window = new MainWindow(_settings, Persist, DemoKey, ExitApp, _overlay);
         _keys = new KeyboardHook { Listen = _settings.KeySound };
         if (_keys.Installed)
             _keys.Key += (down, vk) => Dispatcher.BeginInvoke(() => _sound?.PlayKey(down, vk));
@@ -164,27 +164,6 @@ public partial class App : System.Windows.Application
             _overlay.AddTrail(x, y, Themes.Trail);
         if (more)
             Dispatcher.BeginInvoke(FlushMove);
-    }
-
-    private void Preview()
-    {
-        if (_settings is null || _overlay is null || _sound is null)
-            return;
-        var screen = System.Windows.Forms.Screen.PrimaryScreen;
-        if (screen is null)
-            return;
-        var area = screen.WorkingArea;
-        var x = area.Left + area.Width / 5;
-        var y = area.Top + area.Height / 2;
-        for (var i = 0; i < 14; i++)
-        {
-            var px = x - 120 + i * 9;
-            var py = y + (int)(Math.Sin(i * 0.45) * 22);
-            _overlay.AddTrail(px, py, Themes.Trail);
-        }
-
-        _overlay.Spawn(ClickKind.Left, x, y);
-        _sound.Play(ClickKind.Left, force: true);
     }
 
     private void ToggleWindow()

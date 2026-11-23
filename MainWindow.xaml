@@ -112,8 +112,6 @@
           </Border>
         </UniformGrid>
 
-        <Button Content="试一下" Style="{StaticResource AccentButton}" Click="PreviewClick" Margin="0,0,0,14"/>
-
         <Border Style="{StaticResource Card}" Margin="0,0,0,8">
           <Grid>
             <StackPanel Margin="0,0,58,0">

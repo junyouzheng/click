@@ -63,40 +63,6 @@
       </Setter>
     </Style>
 
-    <Style x:Key="AccentButton" TargetType="Button">
-      <Setter Property="Foreground" Value="#2A2112"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Cursor" Value="Hand"/>
-      <Setter Property="FontSize" Value="14"/>
-      <Setter Property="FontWeight" Value="SemiBold"/>
-      <Setter Property="Padding" Value="16,10"/>
-      <Setter Property="HorizontalAlignment" Value="Stretch"/>
-      <Setter Property="Template">
-        <Setter.Value>
-          <ControlTemplate TargetType="Button">
-            <Border x:Name="bd" CornerRadius="12" Padding="{TemplateBinding Padding}">
-              <Border.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                  <GradientStop Color="#F6D48A" Offset="0"/>
-                  <GradientStop Color="#E2B15A" Offset="1"/>
-                </LinearGradientBrush>
-              </Border.Background>
-              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Border>
-            <ControlTemplate.Triggers>
-              <Trigger Property="IsMouseOver" Value="True">
-                <Setter TargetName="bd" Property="Background" Value="#F8E0A8"/>
-              </Trigger>
-              <Trigger Property="IsPressed" Value="True">
-                <Setter TargetName="bd" Property="Background" Value="#C9963E"/>
-                <Setter Property="Foreground" Value="#1C160E"/>
-              </Trigger>
-            </ControlTemplate.Triggers>
-          </ControlTemplate>
-        </Setter.Value>
-      </Setter>
-    </Style>
-
     <Style x:Key="QuietButton" TargetType="Button">
       <Setter Property="Foreground" Value="#E7C7C2"/>
       <Setter Property="Background" Value="#2A1718"/>
