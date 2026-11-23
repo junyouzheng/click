@@ -1,0 +1,36 @@
+<Application x:Class="ClickFx.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Application.Resources>
+    <SolidColorBrush x:Key="BgBrush" Color="#0C0D10"/>
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#16181D"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="#2A2E36"/>
+    <SolidColorBrush x:Key="TextBrush" Color="#F3EEE4"/>
+    <SolidColorBrush x:Key="MutedBrush" Color="#8B909A"/>
+    <SolidColorBrush x:Key="GoldBrush" Color="#E2B66A"/>
+
+    <Style x:Key="AccentButton" TargetType="Button">
+      <Setter Property="Background" Value="#1A3D36"/>
+      <Setter Property="Foreground" Value="#7EE0C3"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Padding" Value="16,8"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="bd" Property="Background" Value="#24564A"/>
+                <Setter Property="Foreground" Value="#EFFFF8"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Application.Resources>
+</Application>

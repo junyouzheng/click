@@ -1,0 +1,103 @@
+<Window x:Class="ClickFx.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="键鼠特效"
+        Width="392"
+        SizeToContent="Height"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#0C0D10"
+        ShowInTaskbar="False"
+        Topmost="True"
+        FontFamily="Microsoft YaHei UI"
+        TextOptions.TextFormattingMode="Display">
+  <Border BorderBrush="#2A2E36" BorderThickness="1">
+    <DockPanel>
+      <Grid DockPanel.Dock="Top" Height="44" Background="#12141A" MouseLeftButtonDown="DragWindow">
+        <TextBlock Text="键鼠特效" Margin="16,0,0,0" VerticalAlignment="Center"
+                   Foreground="{StaticResource TextBrush}" FontSize="14"/>
+      </Grid>
+
+      <StackPanel Margin="18,16,18,18">
+        <TextBlock Text="鼠标" Foreground="{StaticResource MutedBrush}" FontSize="12" Margin="0,0,0,8"/>
+        <Grid Margin="0,0,0,10">
+          <TextBlock Text="光效" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" FontSize="13"/>
+          <CheckBox x:Name="EffectsBox" HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Foreground="{StaticResource GoldBrush}" Click="EffectsClick"/>
+        </Grid>
+        <Grid Margin="0,0,0,14">
+          <TextBlock Text="点击声" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" FontSize="13"/>
+          <CheckBox x:Name="SoundBox" HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Foreground="{StaticResource GoldBrush}" Click="SoundClick"/>
+        </Grid>
+        <TextBlock Text="键盘" Foreground="{StaticResource MutedBrush}" FontSize="12" Margin="0,0,0,8"/>
+        <Grid Margin="0,0,0,10">
+          <TextBlock Text="按键声" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" FontSize="13"/>
+          <CheckBox x:Name="KeySoundBox" HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Foreground="{StaticResource GoldBrush}" Click="KeySoundClick"/>
+        </Grid>
+        <Grid Margin="0,4,0,6">
+          <TextBlock Text="音量" Foreground="{StaticResource MutedBrush}" FontSize="12" VerticalAlignment="Center"/>
+          <TextBlock x:Name="VolumeLabel" Text="40" Foreground="{StaticResource TextBrush}"
+                     HorizontalAlignment="Right" FontSize="12"/>
+        </Grid>
+        <Slider x:Name="VolumeSlider" Minimum="0" Maximum="100" Value="40" Margin="0,0,0,16"
+                TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="10"
+                ValueChanged="VolumeChanged">
+          <Slider.Template>
+            <ControlTemplate TargetType="Slider">
+              <Grid Height="22" VerticalAlignment="Center">
+                <Track x:Name="PART_Track">
+                  <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
+                      <RepeatButton.Template>
+                        <ControlTemplate TargetType="RepeatButton">
+                          <Border Height="4" Background="#E2B66A" CornerRadius="2" VerticalAlignment="Center"/>
+                        </ControlTemplate>
+                      </RepeatButton.Template>
+                    </RepeatButton>
+                  </Track.DecreaseRepeatButton>
+                  <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="Slider.IncreaseLarge" Focusable="False">
+                      <RepeatButton.Template>
+                        <ControlTemplate TargetType="RepeatButton">
+                          <Border Height="4" Background="#2A2E36" CornerRadius="2" VerticalAlignment="Center"/>
+                        </ControlTemplate>
+                      </RepeatButton.Template>
+                    </RepeatButton>
+                  </Track.IncreaseRepeatButton>
+                  <Track.Thumb>
+                    <Thumb Focusable="False">
+                      <Thumb.Template>
+                        <ControlTemplate TargetType="Thumb">
+                          <Ellipse Width="16" Height="16" Fill="#F3EEE4"/>
+                        </ControlTemplate>
+                      </Thumb.Template>
+                    </Thumb>
+                  </Track.Thumb>
+                </Track>
+              </Grid>
+            </ControlTemplate>
+          </Slider.Template>
+        </Slider>
+
+        <CheckBox x:Name="StartupBox" Content="开机自启动" Foreground="{StaticResource TextBrush}"
+                  FontSize="13" Margin="0,0,0,16" Click="StartupClick"/>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+          <Ellipse Width="8" Height="8" Fill="#F3C56A" Margin="0,0,6,0"/>
+          <TextBlock Text="左键" Foreground="{StaticResource MutedBrush}" FontSize="12" Margin="0,0,14,0" VerticalAlignment="Center"/>
+          <Ellipse Width="8" Height="8" Fill="#7EB6FF" Margin="0,0,6,0"/>
+          <TextBlock Text="右键" Foreground="{StaticResource MutedBrush}" FontSize="12" Margin="0,0,14,0" VerticalAlignment="Center"/>
+          <Ellipse Width="8" Height="8" Fill="#7EE0C3" Margin="0,0,6,0"/>
+          <TextBlock Text="中键" Foreground="{StaticResource MutedBrush}" FontSize="12" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <Button Content="试一下" Style="{StaticResource AccentButton}" HorizontalAlignment="Left" Click="PreviewClick"/>
+        <TextBlock TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" FontSize="12" Margin="0,12,0,0"
+                   Text="键鼠特效同时管鼠标和键盘。点击播放星火和手机键盘声，滑动拖出浅蓝色光尾。箭头仍是原来的形状，箭身上有一小段蓝色。敲键盘也是手机键盘声，按下是指尖点在屏幕上，松开是很轻的抬起，退格键是更低的删除声，音量与点击声共用。窗口上没有关闭按钮。再点一次托盘图标，或点到窗口外面，都会收回托盘。管理员窗口里的点击和打字，需要这个程序也以管理员身份运行才听得到、看得到。"/>
+      </StackPanel>
+    </DockPanel>
+  </Border>
+</Window>

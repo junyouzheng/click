@@ -1,0 +1,12 @@
+bin/
+obj/
+dist/
+.vs/
+*.user
+*.suo
+*.cache
+*.pdb
+*.exe
+*.dll
+*.msi
+*.zip
