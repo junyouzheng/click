@@ -1,6 +1,5 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using DrawingColor = System.Drawing.Color;
 using Forms = System.Windows.Forms;
@@ -13,8 +12,6 @@ internal sealed class TrayService : IDisposable
     private readonly Forms.ToolStripMenuItem _startup;
     private readonly Icon _iconImage;
     private readonly Func<AppSettings> _settings;
-    private static readonly FieldInfo? WindowField = typeof(Forms.NotifyIcon).GetField("_window", BindingFlags.Instance | BindingFlags.NonPublic);
-    private static readonly FieldInfo? IdField = typeof(Forms.NotifyIcon).GetField("_id", BindingFlags.Instance | BindingFlags.NonPublic);
 
     public TrayService(
         Action open,
@@ -48,28 +45,6 @@ internal sealed class TrayService : IDisposable
     }
 
     public void Sync() => SyncChecks();
-
-    public bool TryGetIconRect(out int left, out int top, out int right, out int bottom)
-    {
-        left = top = right = bottom = 0;
-        if (WindowField?.GetValue(_icon) is not Forms.NativeWindow window || window.Handle == IntPtr.Zero || IdField is null)
-            return false;
-        var ident = new NotifyIconIdentifier
-        {
-            cbSize = (uint)Marshal.SizeOf<NotifyIconIdentifier>(),
-            hWnd = window.Handle,
-            uID = (uint)IdField.GetValue(_icon)!
-        };
-        if (Shell_NotifyIconGetRect(ref ident, out var rect) != 0)
-            return false;
-        if (rect.Right <= rect.Left || rect.Bottom <= rect.Top)
-            return false;
-        left = rect.Left;
-        top = rect.Top;
-        right = rect.Right;
-        bottom = rect.Bottom;
-        return true;
-    }
 
     public void Dispose()
     {
@@ -111,27 +86,6 @@ internal sealed class TrayService : IDisposable
             DestroyIcon(handle);
         }
     }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct NotifyIconIdentifier
-    {
-        public uint cbSize;
-        public IntPtr hWnd;
-        public uint uID;
-        public Guid guidItem;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct NativeRect
-    {
-        public int Left;
-        public int Top;
-        public int Right;
-        public int Bottom;
-    }
-
-    [DllImport("shell32.dll", SetLastError = true)]
-    private static extern int Shell_NotifyIconGetRect(ref NotifyIconIdentifier identifier, out NativeRect iconLocation);
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool DestroyIcon(IntPtr handle);

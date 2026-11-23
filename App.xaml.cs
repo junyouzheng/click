@@ -80,9 +80,6 @@ public partial class App : System.Windows.Application
         AppDomain.CurrentDomain.ProcessExit += (_, _) => CursorTheme.Restore();
 
         _tray = new TrayService(ToggleWindow, ExitApp, () => _settings, ToggleStartup);
-        _window.LocateTray = () => _tray.TryGetIconRect(out var left, out var top, out var right, out var bottom)
-            ? (left, top, right, bottom)
-            : null;
         SystemEvents.DisplaySettingsChanged += OnDisplay;
         _showEvent = new EventWaitHandle(false, EventResetMode.AutoReset, @"Local\Click.Show");
         _showWatch = new CancellationTokenSource();
@@ -267,7 +264,12 @@ public partial class App : System.Windows.Application
 
     private void OnDisplay(object? sender, EventArgs e)
     {
-        Dispatcher.BeginInvoke(() => _overlay?.FitToVirtualScreen());
+        Dispatcher.BeginInvoke(() =>
+        {
+            _overlay?.FitToVirtualScreen();
+            if (_window?.IsVisible == true)
+                _window.SnapToEdge();
+        });
     }
 
     private static void SignalExisting()

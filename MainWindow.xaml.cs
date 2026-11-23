@@ -13,9 +13,8 @@ public partial class MainWindow : Window
     private readonly OverlayWindow _overlay;
     private bool _syncing;
     private bool _exit;
+    private bool _snapping;
     private long _holdOpenUntil;
-
-    internal Func<(int Left, int Top, int Right, int Bottom)?>? LocateTray { get; set; }
 
     internal MainWindow(AppSettings settings, Action persist, Action preview, Action demoKey, OverlayWindow overlay)
     {
@@ -50,7 +49,7 @@ public partial class MainWindow : Window
         {
             Show();
             UpdateLayout();
-            MoveNextToTray();
+            SnapToEdge();
         }
         finally
         {
@@ -60,6 +59,22 @@ public partial class MainWindow : Window
 
         _overlay.PushBelow(this);
         Activate();
+        SnapToEdge();
+    }
+
+    internal void SnapToEdge()
+    {
+        if (_snapping || !IsVisible)
+            return;
+        _snapping = true;
+        try
+        {
+            WindowAnchor.SnapToWorkAreaEdge(this);
+        }
+        finally
+        {
+            _snapping = false;
+        }
     }
 
     public void Sync()
@@ -89,6 +104,20 @@ public partial class MainWindow : Window
         base.OnClosing(e);
     }
 
+    protected override void OnActivated(EventArgs e)
+    {
+        base.OnActivated(e);
+        if (IsVisible)
+            SnapToEdge();
+    }
+
+    protected override void OnLocationChanged(EventArgs e)
+    {
+        base.OnLocationChanged(e);
+        if (!_snapping && IsVisible)
+            SnapToEdge();
+    }
+
     protected override void OnDeactivated(EventArgs e)
     {
         base.OnDeactivated(e);
@@ -102,91 +131,6 @@ public partial class MainWindow : Window
         if (_exit || !IsVisible || IsActive || Environment.TickCount64 < _holdOpenUntil)
             return;
         Hide();
-    }
-
-    private void MoveNextToTray()
-    {
-        var hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
-        if (hwnd == IntPtr.Zero || !GetWindowRect(hwnd, out var window))
-            return;
-        var width = window.Right - window.Left;
-        var height = window.Bottom - window.Top;
-        if (width <= 0 || height <= 0)
-            return;
-        var icon = LocateTray?.Invoke();
-        if (icon is not { } anchor || !ScreenContains(anchor))
-            anchor = FallbackAnchor();
-        var screen = System.Windows.Forms.Screen.FromRectangle(new System.Drawing.Rectangle(
-            anchor.Left,
-            anchor.Top,
-            Math.Max(1, anchor.Right - anchor.Left),
-            Math.Max(1, anchor.Bottom - anchor.Top)));
-        var work = screen.WorkingArea;
-        var bounds = screen.Bounds;
-        const int gap = 10;
-        var fromBottom = Math.Abs(anchor.Bottom - bounds.Bottom);
-        var fromTop = Math.Abs(anchor.Top - bounds.Top);
-        var fromLeft = Math.Abs(anchor.Left - bounds.Left);
-        var fromRight = Math.Abs(anchor.Right - bounds.Right);
-        int x;
-        int y;
-        if (fromLeft <= fromRight && fromLeft <= fromTop && fromLeft <= fromBottom)
-        {
-            x = anchor.Right + gap;
-            y = anchor.Bottom - height;
-        }
-        else if (fromRight <= fromTop && fromRight <= fromBottom)
-        {
-            x = anchor.Left - width - gap;
-            y = anchor.Bottom - height;
-        }
-        else if (fromTop <= fromBottom)
-        {
-            x = anchor.Right - width;
-            y = anchor.Bottom + gap;
-        }
-        else
-        {
-            x = anchor.Right - width;
-            y = anchor.Top - height - gap;
-        }
-
-        if (x < work.Left)
-            x = work.Left;
-        if (y < work.Top)
-            y = work.Top;
-        if (x + width > work.Right)
-            x = work.Right - width;
-        if (y + height > work.Bottom)
-            y = work.Bottom - height;
-        SetWindowPos(hwnd, new IntPtr(-1), x, y, 0, 0, SwpNoSize | SwpNoActivate);
-    }
-
-    private static (int Left, int Top, int Right, int Bottom) FallbackAnchor()
-    {
-        var screen = System.Windows.Forms.Screen.PrimaryScreen ?? System.Windows.Forms.Screen.AllScreens[0];
-        var work = screen.WorkingArea;
-        var bounds = screen.Bounds;
-        const int size = 24;
-        if (bounds.Bottom > work.Bottom)
-            return (work.Right - size, work.Bottom, work.Right, work.Bottom + size);
-        if (bounds.Top < work.Top)
-            return (work.Right - size, work.Top - size, work.Right, work.Top);
-        if (bounds.Left < work.Left)
-            return (work.Left - size, work.Bottom - size, work.Left, work.Bottom);
-        return (work.Right, work.Bottom - size, work.Right + size, work.Bottom);
-    }
-
-    private static bool ScreenContains((int Left, int Top, int Right, int Bottom) rect)
-    {
-        var area = new System.Drawing.Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
-        foreach (var screen in System.Windows.Forms.Screen.AllScreens)
-        {
-            if (screen.Bounds.IntersectsWith(area))
-                return true;
-        }
-
-        return false;
     }
 
     private void EffectsClick(object sender, RoutedEventArgs e)
@@ -235,12 +179,6 @@ public partial class MainWindow : Window
     }
 
     private void PreviewClick(object sender, RoutedEventArgs e) => _preview();
-
-    private const uint SwpNoSize = 0x0001;
-    private const uint SwpNoActivate = 0x0010;
-
-    [DllImport("user32.dll")]
-    private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint flags);
 
     [DllImport("user32.dll")]
     private static extern bool GetWindowRect(IntPtr hWnd, out NativeRect rect);
