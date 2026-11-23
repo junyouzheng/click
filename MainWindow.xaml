@@ -39,12 +39,24 @@
         </Border.Background>
       </Border>
 
-      <Grid DockPanel.Dock="Top" Height="58">
-        <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
-          <TextBlock Text="click" Foreground="{StaticResource TextBrush}" FontSize="18" FontWeight="SemiBold"/>
-          <TextBlock Text="星火与手机键盘" Foreground="{StaticResource MutedBrush}" FontSize="12" Margin="0,2,0,0"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0">
+      <Grid DockPanel.Dock="Top" Margin="22,12,16,8">
+        <TextBlock Text="click" FontFamily="Bodoni MT" FontStyle="Italic" FontSize="46"
+                   VerticalAlignment="Center"
+                   TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="Grayscale"
+                   Margin="0,0,12,0">
+          <TextBlock.Foreground>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+              <GradientStop Color="#FFF6D48A" Offset="0"/>
+              <GradientStop Color="#FFF3C56A" Offset="0.38"/>
+              <GradientStop Color="#FFD7E6FF" Offset="0.72"/>
+              <GradientStop Color="#FF7EE0C3" Offset="1"/>
+            </LinearGradientBrush>
+          </TextBlock.Foreground>
+          <TextBlock.Effect>
+            <DropShadowEffect Color="#F3C56A" BlurRadius="18" ShadowDepth="0" Opacity="0.42"/>
+          </TextBlock.Effect>
+        </TextBlock>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
           <Ellipse Width="8" Height="8" Fill="#F3C56A" Margin="0,0,6,0"/>
           <Ellipse Width="8" Height="8" Fill="#7EB6FF" Margin="0,0,6,0"/>
           <Ellipse Width="8" Height="8" Fill="#7EE0C3"/>
@@ -92,21 +104,21 @@
           <Border Margin="0,0,6,0" CornerRadius="12" Padding="12,10" Background="#221C12" BorderBrush="#6A5430" BorderThickness="1">
             <StackPanel>
               <Ellipse Width="10" Height="10" Fill="#F3C56A" HorizontalAlignment="Left"/>
-              <TextBlock Text="左键" Foreground="#F3C56A" FontSize="13" Margin="0,8,0,0"/>
+              <TextBlock Text="左键" FontFamily="Source Han Serif SC" Foreground="#F3C56A" FontSize="15" Margin="0,8,0,0"/>
               <TextBlock Text="金色" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,2,0,0"/>
             </StackPanel>
           </Border>
           <Border Margin="3,0,3,0" CornerRadius="12" Padding="12,10" Background="#121A28" BorderBrush="#34527A" BorderThickness="1">
             <StackPanel>
               <Ellipse Width="10" Height="10" Fill="#7EB6FF" HorizontalAlignment="Left"/>
-              <TextBlock Text="右键" Foreground="#8EBEFF" FontSize="13" Margin="0,8,0,0"/>
+              <TextBlock Text="右键" FontFamily="Source Han Serif SC" Foreground="#8EBEFF" FontSize="15" Margin="0,8,0,0"/>
               <TextBlock Text="蓝色" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,2,0,0"/>
             </StackPanel>
           </Border>
           <Border Margin="6,0,0,0" CornerRadius="12" Padding="12,10" Background="#10211C" BorderBrush="#2C6A58" BorderThickness="1">
             <StackPanel>
               <Ellipse Width="10" Height="10" Fill="#7EE0C3" HorizontalAlignment="Left"/>
-              <TextBlock Text="中键" Foreground="#7EE0C3" FontSize="13" Margin="0,8,0,0"/>
+              <TextBlock Text="中键" FontFamily="Source Han Serif SC" Foreground="#7EE0C3" FontSize="15" Margin="0,8,0,0"/>
               <TextBlock Text="绿色" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,2,0,0"/>
             </StackPanel>
           </Border>
