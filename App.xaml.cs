@@ -28,10 +28,12 @@ public partial class App : System.Windows.Application
             return;
         }
 
+        var background = IsBackground(e.Args);
         _mutex = new Mutex(true, @"Local\Click.Single", out var created);
         if (!created)
         {
-            SignalExisting();
+            if (!background)
+                SignalExisting();
             Shutdown();
             return;
         }
@@ -50,21 +52,23 @@ public partial class App : System.Windows.Application
         _sound = new ClickSound();
         _sound.Configure(_settings.Sound);
         _sound.ConfigureKeys(_settings.KeySound);
-        if (!_sound.AudioReady)
+        if (!_sound.AudioReady && !background)
             MessageBox.Show($"没能打开音频设备（{_sound.AudioError}）。", "click");
         ApplyCursor();
         _overlay = new OverlayWindow();
-        _overlay.Show();
+        if (!background)
+            _overlay.Show();
         _window = new MainWindow(_settings, Persist, Preview, DemoKey, _overlay);
         _keys = new KeyboardHook { Listen = _settings.KeySound };
         if (_keys.Installed)
             _keys.Key += (down, vk) => Dispatcher.BeginInvoke(() => _sound?.PlayKey(down, vk));
-        else
+        else if (!background)
             MessageBox.Show($"没能装上键盘钩子（{_keys.Error}）。", "click");
         _hook = new MouseHook { TrackMove = _settings.Effects };
         if (!_hook.Installed)
         {
-            MessageBox.Show($"没能装上鼠标钩子（{_hook.Error}）。", "click");
+            if (!background)
+                MessageBox.Show($"没能装上鼠标钩子（{_hook.Error}）。", "click");
         }
         else
         {
@@ -76,6 +80,9 @@ public partial class App : System.Windows.Application
         AppDomain.CurrentDomain.ProcessExit += (_, _) => CursorTheme.Restore();
 
         _tray = new TrayService(ToggleWindow, ExitApp, () => _settings, ToggleStartup);
+        _window.LocateTray = () => _tray.TryGetIconRect(out var left, out var top, out var right, out var bottom)
+            ? (left, top, right, bottom)
+            : null;
         SystemEvents.DisplaySettingsChanged += OnDisplay;
         _showEvent = new EventWaitHandle(false, EventResetMode.AutoReset, @"Local\Click.Show");
         _showWatch = new CancellationTokenSource();
@@ -91,7 +98,7 @@ public partial class App : System.Windows.Application
             }
         }, token);
 
-        if (!IsBackground(e.Args))
+        if (!background)
             _window.Present();
     }
 
@@ -277,6 +284,9 @@ public partial class App : System.Windows.Application
     }
 
     private static bool IsBackground(string[] args) =>
+        HasBackground(args) || HasBackground(Environment.GetCommandLineArgs());
+
+    private static bool HasBackground(string[] args) =>
         args.Any(arg => arg.Equals("--background", StringComparison.OrdinalIgnoreCase));
 
     private static bool IsSelfTest(string[] args, out string reportPath)
