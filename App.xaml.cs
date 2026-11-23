@@ -28,7 +28,7 @@ public partial class App : System.Windows.Application
             return;
         }
 
-        _mutex = new Mutex(true, @"Local\ClickFx.Single", out var created);
+        _mutex = new Mutex(true, @"Local\Click.Single", out var created);
         if (!created)
         {
             SignalExisting();
@@ -48,10 +48,10 @@ public partial class App : System.Windows.Application
         }
 
         _sound = new ClickSound();
-        _sound.Configure(_settings.Sound, _settings.Volume);
-        _sound.ConfigureKeys(_settings.KeySound, _settings.Volume);
+        _sound.Configure(_settings.Sound);
+        _sound.ConfigureKeys(_settings.KeySound);
         if (!_sound.AudioReady)
-            MessageBox.Show($"没能打开音频设备（{_sound.AudioError}）。", "键鼠特效");
+            MessageBox.Show($"没能打开音频设备（{_sound.AudioError}）。", "click");
         ApplyCursor();
         _overlay = new OverlayWindow();
         _overlay.Show();
@@ -60,11 +60,11 @@ public partial class App : System.Windows.Application
         if (_keys.Installed)
             _keys.Key += (down, vk) => Dispatcher.BeginInvoke(() => _sound?.PlayKey(down, vk));
         else
-            MessageBox.Show($"没能装上键盘钩子（{_keys.Error}）。", "键鼠特效");
+            MessageBox.Show($"没能装上键盘钩子（{_keys.Error}）。", "click");
         _hook = new MouseHook { TrackMove = _settings.Effects };
         if (!_hook.Installed)
         {
-            MessageBox.Show($"没能装上鼠标钩子（{_hook.Error}）。", "键鼠特效");
+            MessageBox.Show($"没能装上鼠标钩子（{_hook.Error}）。", "click");
         }
         else
         {
@@ -77,7 +77,7 @@ public partial class App : System.Windows.Application
 
         _tray = new TrayService(ToggleWindow, ExitApp, () => _settings, ToggleStartup);
         SystemEvents.DisplaySettingsChanged += OnDisplay;
-        _showEvent = new EventWaitHandle(false, EventResetMode.AutoReset, @"Local\ClickFx.Show");
+        _showEvent = new EventWaitHandle(false, EventResetMode.AutoReset, @"Local\Click.Show");
         _showWatch = new CancellationTokenSource();
         var token = _showWatch.Token;
         var show = _showEvent;
@@ -131,8 +131,8 @@ public partial class App : System.Windows.Application
         if (_settings is null)
             return;
         _settings.Save();
-        _sound?.Configure(_settings.Sound, _settings.Volume);
-        _sound?.ConfigureKeys(_settings.KeySound, _settings.Volume);
+        _sound?.Configure(_settings.Sound);
+        _sound?.ConfigureKeys(_settings.KeySound);
         if (_keys is not null)
             _keys.Listen = _settings.KeySound;
         ApplyCursor();
@@ -239,7 +239,7 @@ public partial class App : System.Windows.Application
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "键鼠特效");
+            MessageBox.Show(ex.Message, "click");
         }
     }
 
@@ -267,7 +267,7 @@ public partial class App : System.Windows.Application
     {
         try
         {
-            using var show = EventWaitHandle.OpenExisting(@"Local\ClickFx.Show");
+            using var show = EventWaitHandle.OpenExisting(@"Local\Click.Show");
             show.Set();
         }
         catch (WaitHandleCannotBeOpenedException)
@@ -281,7 +281,7 @@ public partial class App : System.Windows.Application
 
     private static bool IsSelfTest(string[] args, out string reportPath)
     {
-        reportPath = Path.Combine(Path.GetTempPath(), "click-fx-report.txt");
+        reportPath = Path.Combine(Path.GetTempPath(), "click-report.txt");
         for (var i = 0; i < args.Length; i++)
         {
             if (!args[i].Equals("--self-test", StringComparison.OrdinalIgnoreCase))

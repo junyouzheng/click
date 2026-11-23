@@ -12,7 +12,6 @@ public partial class MainWindow : Window
     private readonly Action _preview;
     private readonly Action _demoKey;
     private readonly OverlayWindow _overlay;
-    private readonly DispatcherTimer _volumeTimer;
     private bool _syncing;
     private bool _exit;
     private long _holdOpenUntil;
@@ -27,12 +26,6 @@ public partial class MainWindow : Window
         _syncing = true;
         InitializeComponent();
         _syncing = false;
-        _volumeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(160) };
-        _volumeTimer.Tick += (_, _) =>
-        {
-            _volumeTimer.Stop();
-            _persist();
-        };
         Sync();
     }
 
@@ -61,8 +54,6 @@ public partial class MainWindow : Window
         SoundBox.IsChecked = _settings.Sound;
         KeySoundBox.IsChecked = _settings.KeySound;
         StartupBox.IsChecked = _settings.StartWithWindows;
-        VolumeSlider.Value = _settings.Volume;
-        VolumeLabel.Text = _settings.Volume.ToString();
         _syncing = false;
     }
 
@@ -77,7 +68,6 @@ public partial class MainWindow : Window
         if (!_exit)
         {
             e.Cancel = true;
-            CommitVolume();
             Hide();
         }
 
@@ -96,7 +86,6 @@ public partial class MainWindow : Window
     {
         if (_exit || !IsVisible || IsActive || Environment.TickCount64 < _holdOpenUntil)
             return;
-        CommitVolume();
         Hide();
     }
 
@@ -132,24 +121,6 @@ public partial class MainWindow : Window
             _demoKey();
     }
 
-    private void VolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-    {
-        if (_syncing || VolumeLabel is null)
-            return;
-        _settings.Volume = (int)Math.Round(VolumeSlider.Value);
-        VolumeLabel.Text = _settings.Volume.ToString();
-        _volumeTimer.Stop();
-        _volumeTimer.Start();
-    }
-
-    private void CommitVolume()
-    {
-        if (!_volumeTimer.IsEnabled)
-            return;
-        _volumeTimer.Stop();
-        _persist();
-    }
-
     private void StartupClick(object sender, RoutedEventArgs e)
     {
         if (_syncing)
@@ -165,7 +136,7 @@ public partial class MainWindow : Window
         {
             _settings.StartWithWindows = StartupRegistry.IsEnabled();
             Sync();
-            MessageBox.Show(this, ex.Message, "键鼠特效", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(this, ex.Message, "click", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 

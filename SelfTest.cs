@@ -8,13 +8,13 @@ internal static class SelfTest
 {
     public static void Run(System.Windows.Application app, string reportPath)
     {
-        var proofPath = Path.Combine(Path.GetDirectoryName(reportPath) ?? Path.GetTempPath(), "click-fx-proof.png");
+        var proofPath = Path.Combine(Path.GetDirectoryName(reportPath) ?? Path.GetTempPath(), "click-proof.png");
         var proof = EffectField.RenderProof(proofPath);
         var soundOk = ClickSound.ClicksAudible() && ClickSound.KeysAudible();
         string audio;
         using (var sound = new ClickSound())
         {
-            sound.ConfigureKeys(true, 100);
+            sound.ConfigureKeys(true);
             sound.PlayKey(down: true, force: true);
             Thread.Sleep(250);
             audio = sound.AudioReady && sound.PlayedSamples > 500
@@ -25,7 +25,7 @@ internal static class SelfTest
         var typed = ProbeKeys();
         string keyHook = typed == "ok" ? "ok" : typed;
         var cursorOk = CursorTheme.LooksDrawn();
-        CursorTheme.SaveSheet(Path.Combine(Path.GetDirectoryName(proofPath) ?? Path.GetTempPath(), "click-fx-cursors.png"));
+        CursorTheme.SaveSheet(Path.Combine(Path.GetDirectoryName(proofPath) ?? Path.GetTempPath(), "click-cursors.png"));
         var before = Sample(12, 12);
         var overlay = new OverlayWindow();
         overlay.Show();

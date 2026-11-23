@@ -23,8 +23,8 @@ internal sealed class ClickSound : IDisposable
     private int _keyUpIndex;
     private int _deleteDownIndex;
     private int _deleteUpIndex;
-    private int _builtVolume = -1;
-    private int _keyVolume = -1;
+    private bool _clicksBuilt;
+    private bool _keysBuilt;
     private bool _enabled = true;
     private bool _keysEnabled;
 
@@ -54,43 +54,39 @@ internal sealed class ClickSound : IDisposable
     public int AudioError => _mixer.Error;
     public long PlayedSamples => _mixer.PlayedSamples;
 
-    public void Configure(bool enabled, int volume)
+    public void Configure(bool enabled)
     {
         _enabled = enabled;
-        volume = Math.Clamp(volume, 0, 100);
-        if (volume == _builtVolume)
+        if (_clicksBuilt)
             return;
-        _builtVolume = volume;
-        var gain = volume / 100.0 * 0.7;
-        Load(_left, ClickKind.Left, gain);
-        Load(_right, ClickKind.Right, gain);
-        Load(_middle, ClickKind.Middle, gain);
+        _clicksBuilt = true;
+        Load(_left, ClickKind.Left, 1);
+        Load(_right, ClickKind.Right, 1);
+        Load(_middle, ClickKind.Middle, 1);
     }
 
-    public void ConfigureKeys(bool enabled, int volume)
+    public void ConfigureKeys(bool enabled)
     {
         _keysEnabled = enabled;
-        volume = Math.Clamp(volume, 0, 100);
-        if (volume == _keyVolume)
+        if (_keysBuilt)
             return;
-        _keyVolume = volume;
-        var gain = volume / 100.0 * 0.7;
+        _keysBuilt = true;
         for (var i = 0; i < KeyVoices; i++)
         {
-            _keyDown[i] = RenderKey(true, gain, i, delete: false);
-            _keyUp[i] = RenderKey(false, gain * 0.48, i, delete: false);
+            _keyDown[i] = RenderKey(true, 1, i, delete: false);
+            _keyUp[i] = RenderKey(false, 0.48, i, delete: false);
         }
 
         for (var i = 0; i < DeleteVoices; i++)
         {
-            _deleteDown[i] = RenderKey(true, gain, i, delete: true);
-            _deleteUp[i] = RenderKey(false, gain * 0.48, i, delete: true);
+            _deleteDown[i] = RenderKey(true, 1, i, delete: true);
+            _deleteUp[i] = RenderKey(false, 0.48, i, delete: true);
         }
     }
 
     public void PlayKey(bool down, int vk = 0, bool force = false)
     {
-        if ((!_keysEnabled && !force) || _keyVolume <= 0)
+        if (!_keysEnabled && !force)
             return;
         short[] sample;
         if (vk == VkBack)
@@ -119,7 +115,7 @@ internal sealed class ClickSound : IDisposable
 
     public void Play(ClickKind kind, bool force = false)
     {
-        if ((!_enabled && !force) || _builtVolume <= 0)
+        if (!_enabled && !force)
             return;
         var pcm = kind switch
         {

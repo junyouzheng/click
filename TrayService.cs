@@ -33,7 +33,7 @@ internal sealed class TrayService : IDisposable
         {
             Icon = _iconImage,
             Visible = true,
-            Text = "键鼠特效",
+            Text = "click",
             ContextMenuStrip = menu
         };
         _icon.MouseClick += (_, e) =>
@@ -56,7 +56,7 @@ internal sealed class TrayService : IDisposable
     private void SyncChecks()
     {
         _startup.Checked = _settings().StartWithWindows;
-        _icon.Text = "键鼠特效";
+        _icon.Text = "click";
     }
 
     private static Icon MakeIcon()

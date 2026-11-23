@@ -9,7 +9,6 @@ internal sealed class AppSettings
     public bool Effects { get; set; } = true;
     public bool Sound { get; set; } = true;
     public bool KeySound { get; set; } = true;
-    public int Volume { get; set; } = 40;
     public string Style { get; set; } = "spark";
     public string SoundPack { get; set; } = "blue";
     public bool StartWithWindows { get; set; }
@@ -21,23 +20,36 @@ internal sealed class AppSettings
         PropertyNameCaseInsensitive = true
     };
 
-    public static string FilePath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "click-fx",
-        "settings.json");
+    public static string FilePath => Path.Combine(Root, "click", "settings.json");
+
+    private static string LegacyFilePath => Path.Combine(Root, "click-fx", "settings.json");
+
+    private static string Root =>
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
     public static AppSettings Load()
     {
         try
         {
-            if (!File.Exists(FilePath))
+            var migrated = false;
+            string? path = null;
+            if (File.Exists(FilePath))
+                path = FilePath;
+            else if (File.Exists(LegacyFilePath))
+            {
+                path = LegacyFilePath;
+                migrated = true;
+            }
+
+            if (path is null)
                 return new AppSettings();
-            var loaded = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(FilePath), JsonOptions);
+            var loaded = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(path), JsonOptions);
             if (loaded is null)
                 return new AppSettings();
-            loaded.Volume = Math.Clamp(loaded.Volume, 0, 100);
             loaded.Style = "spark";
             loaded.SoundPack = "blue";
+            if (migrated)
+                loaded.Save();
             return loaded;
         }
         catch
@@ -48,7 +60,6 @@ internal sealed class AppSettings
 
     public void Save()
     {
-        Volume = Math.Clamp(Volume, 0, 100);
         Style = "spark";
         SoundPack = "blue";
         var dir = Path.GetDirectoryName(FilePath)!;

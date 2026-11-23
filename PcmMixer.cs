@@ -44,6 +44,7 @@ internal sealed class PcmMixer : IDisposable
             return;
         }
 
+        // Session stays at full. Windows master volume is the only loudness control.
         waveOutSetVolume(_wave, 0xFFFFFFFF);
         for (var i = 0; i < Buffers; i++)
         {
